@@ -15,7 +15,6 @@
         <module>contract-system</module>
         <module>contract-tools</module>
         <module>contract-generator</module>
-        <module>contract-api</module>
     </modules>
 
     <name>秒合同 后台管理</name>

@@ -1,6 +1,7 @@
 package com.contract.modules.contract.domain;
 
 import com.contract.base.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,7 @@ public class Order extends BaseEntity implements Serializable {
 
     @Id
     @Column(name = "order_id")
+    @ApiModelProperty(value = "ID", hidden = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 }
