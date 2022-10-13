@@ -158,6 +158,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void register(User resources) {
+        if (userRepository.findByUsername(resources.getUsername()) != null) {
+            throw new EntityExistException(User.class, "username", resources.getUsername());
+        }
+        userRepository.save(resources);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(Set<Long> ids) {
         for (Long id : ids) {

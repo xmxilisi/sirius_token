@@ -122,4 +122,10 @@ public interface UserService {
      * @param resources /
      */
     void updateCenter(User resources);
+
+    /**
+     * app注册
+     * @param resources /
+     */
+    void register(User resources);
 }
