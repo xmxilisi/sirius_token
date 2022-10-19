@@ -23,6 +23,9 @@ import com.contract.annotation.rest.AnonymousGetMapping;
 import com.contract.annotation.rest.AnonymousPostMapping;
 import com.contract.config.RsaProperties;
 import com.contract.exception.BadRequestException;
+import com.contract.modules.asset.domain.UserAsset;
+import com.contract.modules.asset.service.UserAssetService;
+import com.contract.modules.asset.service.dto.UserAssetDto;
 import com.contract.modules.security.config.bean.LoginCodeEnum;
 import com.contract.modules.security.config.bean.LoginProperties;
 import com.contract.modules.security.config.bean.SecurityProperties;
@@ -55,6 +58,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,6 +84,8 @@ public class ApiAuthorizationController {
     private final PasswordEncoder passwordEncoder;
 
     private final UserService userService;
+
+    private final UserAssetService userAssetService;
     @Resource
     private LoginProperties loginProperties;
 
@@ -88,9 +94,9 @@ public class ApiAuthorizationController {
     @AnonymousPostMapping(value = "/login")
     public ResponseEntity<Object> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
         // 密码解密
-        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUser.getPassword());
+        String password = authUser.getPassword();
         // 查询验证码
-        String code = (String) redisUtils.get(authUser.getUuid());
+        /*String code = (String) redisUtils.get(authUser.getUuid());
         // 清除验证码
         redisUtils.del(authUser.getUuid());
         if (StringUtils.isBlank(code)) {
@@ -98,7 +104,7 @@ public class ApiAuthorizationController {
         }
         if (StringUtils.isBlank(authUser.getCode()) || !authUser.getCode().equalsIgnoreCase(code)) {
             throw new BadRequestException("验证码错误");
-        }
+        }*/
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(authUser.getUsername(), password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -189,14 +195,18 @@ public class ApiAuthorizationController {
         if(StringUtils.isEmpty(resources.getPassword())){
             throw new BadRequestException("密码不能为空");
         }
-        String pwd = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,resources.getPassword());
-        resources.setPassword(passwordEncoder.encode(pwd));
+//        String pwd = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,resources.getPassword());
+        resources.setPassword(passwordEncoder.encode(resources.getPassword()));
         User user = BeanUtil.toBean(resources, User.class);
         //部门写死
         Dept dept = new Dept();
         dept.setId(2l);
         user.setDept(dept);
         userService.register(user);
+        UserAsset userAsset = new UserAsset();
+        userAsset.setUserId(user.getId());
+        userAsset.setBalance(new BigDecimal("0"));
+        userAssetService.create(userAsset);
         return new ResponseEntity<>(null,HttpStatus.OK);
     }
 
