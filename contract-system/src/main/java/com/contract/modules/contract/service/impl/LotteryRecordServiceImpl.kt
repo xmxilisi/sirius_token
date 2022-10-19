@@ -52,7 +52,6 @@ class LotteryRecordServiceImpl : LotteryRecordService {
 
     override fun createContract(price : BigDecimal) {
         val contractList = mutableListOf<LotteryRecord>()
-        val map = mutableMapOf<String,LotteryRecord>()
         for (second in list) {
             SymbolsEnum.values().forEach {
                 val volume = IdUtil.getSnowflake().nextIdStr()
@@ -66,7 +65,7 @@ class LotteryRecordServiceImpl : LotteryRecordService {
                 redisTemplate.opsForValue().set("contract-$volume", JSON.toJSONString(lotteryRecord),30,TimeUnit.SECONDS)
             }
         }
-        lotteryRecordRepository.saveAll(contractList)
+        lotteryRecordRepository.saveAllAndFlush(contractList)
     }
 
     override fun lottery( second: String) {

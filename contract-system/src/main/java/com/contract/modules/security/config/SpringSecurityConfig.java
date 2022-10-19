@@ -123,7 +123,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 提供前端的加密货币相关接口
                 .antMatchers("/api/crypto/**").permitAll()
                 .antMatchers("/api/contract/**").permitAll()
-                .antMatchers("/api/order/**").permitAll()
                 // 放行OPTIONS请求
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // 自定义匿名访问所有url放行：允许匿名和带Token访问，细腻化到每个 Request 类型

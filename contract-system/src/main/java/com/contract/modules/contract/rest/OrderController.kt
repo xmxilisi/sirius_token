@@ -3,13 +3,12 @@ package com.contract.modules.contract.rest
 import com.contract.modules.contract.repository.OrderRepository
 import com.contract.modules.contract.service.OrderService
 import com.contract.modules.contract.service.bo.OrderBo
+import com.contract.modules.contract.service.dto.OrderDto
 import com.contract.utils.R
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import lombok.RequiredArgsConstructor
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -37,5 +36,10 @@ class OrderController {
     fun placeAnOrder(@RequestBody bo: OrderBo): R<Any> {
         orderService.placeAnOrder(bo)
         return R.ok()
+    }
+    @ApiOperation("获取订单详情")
+    @GetMapping("/getOrderDetail")
+    fun getOrderDetail(volume : String): R<OrderDto>{
+        return R.ok(orderService.getOrderDetail(volume));
     }
 }

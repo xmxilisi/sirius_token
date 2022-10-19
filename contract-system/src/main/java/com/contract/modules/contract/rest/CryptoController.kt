@@ -5,8 +5,6 @@ import com.contract.modules.contract.enums.SymbolsEnum
 import com.contract.modules.contract.utils.CryptoUtils
 import com.contract.utils.R
 import io.swagger.annotations.Api
-import lombok.RequiredArgsConstructor
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController

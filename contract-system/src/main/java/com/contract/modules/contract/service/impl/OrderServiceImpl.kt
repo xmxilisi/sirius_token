@@ -8,6 +8,7 @@ import com.contract.modules.contract.repository.OrderRepository
 import com.contract.modules.contract.service.LotteryRecordService
 import com.contract.modules.contract.service.OrderService
 import com.contract.modules.contract.service.bo.OrderBo
+import com.contract.modules.contract.service.dto.OrderDto
 import com.contract.utils.SecurityUtils
 import lombok.RequiredArgsConstructor
 import lombok.extern.slf4j.Slf4j
@@ -43,8 +44,8 @@ class OrderServiceImpl : OrderService {
      * @param bo
      */
     override fun placeAnOrder(bo: OrderBo) {
-//        val userId: Long = SecurityUtils.getCurrentUserId()
-        val userId = 2L
+        val userId: Long = SecurityUtils.getCurrentUserId()
+//        val userId = 2L
         val pay: Boolean = userAssetService.pay(userId, bo.betAmount)
         if (TRUE == pay) {
             val recordDto = bo.symbol?.let { lotteryRecordService.getNewVolume(it) }
@@ -59,5 +60,9 @@ class OrderServiceImpl : OrderService {
             order.lotteryRecordId = recordDto?.id
             orderRepository.save<Order>(order)
         }
+    }
+
+    override fun getOrderDetail(volume: String): OrderDto {
+        return OrderDto();
     }
 }
