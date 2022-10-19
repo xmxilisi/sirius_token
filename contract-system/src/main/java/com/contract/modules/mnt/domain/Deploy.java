@@ -34,7 +34,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name="mnt_deploy")
-public class Deploy extends BaseEntity implements Serializable {
+public class Deploy implements Serializable {
 
     @Id
 	@Column(name = "deploy_id")

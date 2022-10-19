@@ -1,5 +1,7 @@
 package com.contract.constants;
 
+import com.fasterxml.classmate.ResolvedType;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -29,6 +31,7 @@ public final class Constants {
         public static final String UNDER_LINE = "_";
         public static final String SEPARATOR = ":";
         public static final int COMPUTER_CORE = Runtime.getRuntime().availableProcessors() * 2;
+        public static final String PROD = "prod";
     }
 
     /**
@@ -66,5 +69,9 @@ public final class Constants {
         public static final long HOURS_MILL_SECOND = 1000L * 60 * 60;
         public static final long MINUTES_MILL_SECOND = 1000L * 60;
         public static final long SECONDS_MILL_SECOND = 1000L;
+    }
+
+    public static final class Cypto {
+        public static final String BTC_USDT = "BTCUSDT";
     }
 }

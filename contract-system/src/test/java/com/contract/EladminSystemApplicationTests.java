@@ -1,19 +1,20 @@
 package com.contract;
 
-import com.contract.modules.contract.utils.HttpClient;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.net.http.HttpResponse;
+import com.contract.modules.contract.service.LotteryRecordService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EladminSystemApplicationTests {
 
+    @Autowired
+    private LotteryRecordService lotteryRecordService;
+
     @Test
-    public void contextLoads() {
-        HttpResponse<String> stringHttpResponse =
-                HttpClient.get("https://www.baidu.com");
-        System.out.println(stringHttpResponse);
+    public void getSt(){
+        lotteryRecordService.lottery("30");
     }
 
     public static void main(String[] args) {

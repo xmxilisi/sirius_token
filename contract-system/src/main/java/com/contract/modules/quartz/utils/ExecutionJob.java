@@ -47,7 +47,7 @@ public class ExecutionJob extends QuartzJobBean {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     // 此处仅供参考，可根据任务执行情况自定义线程池参数
-    private final static ExecutorService executor = ThreadPoolExecutorUtil.getPoll("el-quartz-job");
+    private final static ExecutorService executor = ThreadPoolExecutorUtil.getPoll("sc-quartz-job");
 
     @Override
     public void executeInternal(JobExecutionContext context) {

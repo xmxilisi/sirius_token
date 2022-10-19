@@ -15,9 +15,12 @@
  */
 package com.contract.config;
 
+import com.contract.constants.Constants;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Zheng Jie
@@ -29,9 +32,25 @@ import org.springframework.stereotype.Component;
 public class ElAdminProperties {
 
     public static Boolean ipLocal;
+    @Value("${spring.profiles.active}")
+    public String environment;
 
     @Value("${ip.local-parsing}")
     public void setIpLocal(Boolean ipLocal) {
         ElAdminProperties.ipLocal = ipLocal;
+    }
+
+    @PostConstruct
+    public void init(){
+        if (! Constants.System.PROD.equals(environment)) {
+            System.out.println("开启本地代理......");
+            String proxyHost = "localhost";
+            String proxyPort = "7890";
+            System.setProperty("http.proxyHost", proxyHost);
+            System.setProperty("http.proxyPort", proxyPort);
+            // 对https也开启代理
+            System.setProperty("https.proxyHost", proxyHost);
+            System.setProperty("https.proxyPort", proxyPort);
+        }
     }
 }

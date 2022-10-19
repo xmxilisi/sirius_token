@@ -27,14 +27,14 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Getter
 public class BadRequestException extends RuntimeException{
 
-    private Integer status = BAD_REQUEST.value();
+    private Integer code = BAD_REQUEST.value();
 
     public BadRequestException(String msg){
         super(msg);
     }
 
-    public BadRequestException(HttpStatus status,String msg){
+    public BadRequestException(HttpStatus code,String msg){
         super(msg);
-        this.status = status.value();
+        this.code = code.value();
     }
 }

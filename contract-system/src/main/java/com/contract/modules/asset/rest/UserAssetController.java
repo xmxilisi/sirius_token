@@ -19,6 +19,7 @@ import com.contract.annotation.Log;
 import com.contract.modules.asset.domain.UserAsset;
 import com.contract.modules.asset.service.UserAssetService;
 import com.contract.modules.asset.service.dto.UserAssetQueryCriteria;
+import com.contract.utils.R;
 import com.contract.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -91,7 +92,7 @@ public class UserAssetController {
     @GetMapping("/findUserAsset")
     @Log("查询用户余额")
     @ApiOperation("查询用户余额")
-    public ResponseEntity<Object> findUserAsset(){
-        return new ResponseEntity<>(userAssetService.findByUserId(SecurityUtils.getCurrentUserId()),HttpStatus.OK);
+    public R<Object> findUserAsset(){
+        return R.Companion.ok(userAssetService.findByUserId(SecurityUtils.getCurrentUserId()));
     }
 }
