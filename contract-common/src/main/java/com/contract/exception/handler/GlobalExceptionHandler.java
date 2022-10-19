@@ -15,7 +15,9 @@
  */
 package com.contract.exception.handler;
 
+import com.contract.exception.BusinessException;
 import com.contract.exception.EntityExistException;
+import com.contract.utils.R;
 import com.contract.utils.ThrowableUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.contract.exception.BadRequestException;
@@ -101,6 +103,16 @@ public class GlobalExceptionHandler {
             message = str[1] + ":" + message;
         }
         return buildResponseEntity(ApiError.error(message));
+    }
+
+    /**
+     * 处理自定义异常
+     */
+    @ExceptionHandler(value = BusinessException.class)
+    public R<ApiError> BusinessException(BusinessException e) {
+        // 打印堆栈信息
+        log.error(ThrowableUtil.getStackTrace(e));
+        return R.Companion.fail(e.getMessage());
     }
 
     /**

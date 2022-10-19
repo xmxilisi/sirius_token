@@ -16,6 +16,7 @@
 package com.contract.modules.asset.service.impl;
 
 import com.contract.exception.BadRequestException;
+import com.contract.exception.BusinessException;
 import com.contract.modules.asset.domain.UserAsset;
 import com.contract.modules.asset.repository.UserAssetRepository;
 import com.contract.modules.asset.service.UserAssetService;
@@ -116,7 +117,7 @@ public class UserAssetServiceImpl implements UserAssetService {
         synchronized (this){
             UserAsset userAsset = userAssetRepository.findByUserId(userId);
             if(userAsset==null||userAsset.getBalance().compareTo(balance)<1){
-                throw new BadRequestException("余额不足");
+                throw new BusinessException("余额不足");
             }
             userAsset.setBalance(userAsset.getBalance().subtract(balance));
             userAssetRepository.save(userAsset);
@@ -129,7 +130,7 @@ public class UserAssetServiceImpl implements UserAssetService {
         synchronized (this){
             UserAsset userAsset = userAssetRepository.findByUserId(userId);
             if(userAsset==null){
-                throw new BadRequestException("资金账户不存在");
+                throw new BusinessException("资金账户不存在");
             }
             userAsset.setBalance(userAsset.getBalance().add(balance));
             userAssetRepository.save(userAsset);

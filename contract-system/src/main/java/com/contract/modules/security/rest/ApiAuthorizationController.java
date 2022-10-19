@@ -23,6 +23,7 @@ import com.contract.annotation.rest.AnonymousGetMapping;
 import com.contract.annotation.rest.AnonymousPostMapping;
 import com.contract.config.RsaProperties;
 import com.contract.exception.BadRequestException;
+import com.contract.exception.BusinessException;
 import com.contract.modules.asset.domain.UserAsset;
 import com.contract.modules.asset.service.UserAssetService;
 import com.contract.modules.asset.service.dto.UserAssetDto;
@@ -153,8 +154,8 @@ public class ApiAuthorizationController {
 
     @ApiOperation("获取用户信息")
     @GetMapping(value = "/info")
-    public ResponseEntity<Object> getUserInfo() {
-        return ResponseEntity.ok(SecurityUtils.getCurrentUser());
+    public R<Object> getUserInfo() {
+        return R.Companion.ok(SecurityUtils.getCurrentUser());
     }
 
     @ApiOperation("获取验证码")
@@ -188,12 +189,12 @@ public class ApiAuthorizationController {
     @Log("用户注册")
     @ApiOperation("用户注册")
     @AnonymousPostMapping(value = "/register")
-    public ResponseEntity<Object> register(@Validated @RequestBody AppUser resources) throws Exception {
+    public R<Object> register(@Validated @RequestBody AppUser resources) throws Exception {
         if(StringUtils.isEmpty(resources.getUsername())){
-            throw new BadRequestException("用户名不能为空");
+            throw new BusinessException("用户名不能为空");
         }
         if(StringUtils.isEmpty(resources.getPassword())){
-            throw new BadRequestException("密码不能为空");
+            throw new BusinessException("密码不能为空");
         }
 //        String pwd = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,resources.getPassword());
         resources.setPassword(passwordEncoder.encode(resources.getPassword()));
@@ -207,7 +208,7 @@ public class ApiAuthorizationController {
         userAsset.setUserId(user.getId());
         userAsset.setBalance(new BigDecimal("0"));
         userAssetService.create(userAsset);
-        return new ResponseEntity<>(null,HttpStatus.OK);
+        return R.Companion.ok(null);
     }
 
     @ApiOperation("修改密码")
@@ -217,10 +218,10 @@ public class ApiAuthorizationController {
         String newPass = passVo.getNewPass();
         UserDto user = userService.findByName(SecurityUtils.getCurrentUsername());
         if(!passwordEncoder.matches(oldPass, user.getPassword())){
-            throw new BadRequestException("修改失败，旧密码错误");
+            throw new BusinessException("修改失败，旧密码错误");
         }
         if(passwordEncoder.matches(newPass, user.getPassword())){
-            throw new BadRequestException("新密码不能与旧密码相同");
+            throw new BusinessException("新密码不能与旧密码相同");
         }
         userService.updatePass(user.getUsername(),passwordEncoder.encode(newPass));
         onlineUserService.logout(tokenProvider.getToken(request));
