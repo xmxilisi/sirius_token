@@ -109,8 +109,10 @@ public class ApiAuthorizationController {
         // SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.createToken(authentication);
         final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
-        // 保存在线信息，设置token过期时间
-        save(jwtUserDto, token, request);
+        // 保存在线信息，设置token过期时间(需要和后台设置不同过期时间时调这个)
+//        save(jwtUserDto, token, request);
+        // 保存在线信息
+        onlineUserService.save(jwtUserDto, token, request);
         // 返回 token 与 用户信息
         Map<String, Object> authInfo = new HashMap<String, Object>(2) {{
             put("token", properties.getTokenStartWith() + token);
