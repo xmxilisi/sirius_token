@@ -2,6 +2,7 @@ package com.contract.modules.contract.service
 
 import java.math.BigDecimal
 import com.contract.modules.contract.service.dto.LotteryRecordDto
+import com.contract.modules.contract.service.vo.LotteryRecordVo
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,5 +21,8 @@ interface LotteryRecordService {
     /**
      * 获取指定交易对的期号和倒计时
      */
-    fun getNewVolume(symbol: String): LotteryRecordDto?
+    fun getNewVolume(symbol: String,second:String): LotteryRecordDto?
+
+    fun getTheLotteryRecord(second: String, symbol: String): List<LotteryRecordVo>
+    fun getBettingHistory(second: String): Any
 }

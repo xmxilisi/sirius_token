@@ -1,7 +1,6 @@
 package com.contract.modules.contract.service
 
 import com.contract.modules.contract.service.bo.OrderBo
-import com.contract.modules.contract.service.dto.OrderDto
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,5 +16,6 @@ interface OrderService {
      * @param bo
      */
     fun placeAnOrder(bo: OrderBo)
-    fun getOrderDetail(volume: String): OrderDto
+
+    fun getOrderDetail(volume: String): Map<String,Any>
 }

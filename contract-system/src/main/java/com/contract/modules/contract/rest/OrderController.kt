@@ -3,7 +3,6 @@ package com.contract.modules.contract.rest
 import com.contract.modules.contract.repository.OrderRepository
 import com.contract.modules.contract.service.OrderService
 import com.contract.modules.contract.service.bo.OrderBo
-import com.contract.modules.contract.service.dto.OrderDto
 import com.contract.utils.R
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -27,8 +26,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/order")
 class OrderController {
     @Autowired
-    private lateinit var orderRepository: OrderRepository
-    @Autowired
     private lateinit var orderService: OrderService
 
     @ApiOperation("下单")
@@ -39,7 +36,7 @@ class OrderController {
     }
     @ApiOperation("获取订单详情")
     @GetMapping("/getOrderDetail")
-    fun getOrderDetail(volume : String): R<OrderDto>{
+    fun getOrderDetail(volume : String): R<Map<String, Any>>{
         return R.ok(orderService.getOrderDetail(volume));
     }
 }

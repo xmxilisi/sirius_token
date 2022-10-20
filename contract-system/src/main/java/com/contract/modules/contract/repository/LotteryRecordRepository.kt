@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.sql.Timestamp
-import java.util.*
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,19 +21,20 @@ interface LotteryRecordRepository : JpaRepository<LotteryRecord, Long> {
 
     @Transactional
     @Modifying
-    @Query("update LotteryRecord l set l.drawDate = ?1, l.type = ?2, l.markPrice = ?3 , l.status = ?4 where l.id = ?5 and l.status = ?6")
+    @Query("update LotteryRecord l set l.drawDate = ?1, l.markPrice = ?2 , l.status = ?3 where l.id = ?4 and l.status = ?5 and l.type = ?6")
     fun lottery(
-        drawDate: Timestamp, type: String,
-        markPrice: BigDecimal,
-        status: String, id: Long?, status1: String): Int
+        drawDate: Timestamp, markPrice: BigDecimal,
+        status: String, id: Long?, status1: String, type : String): Int
 
-    @Transactional
+    fun findFirstBySymbolAndStatusAndType(symbol: String, status: String, type: String): LotteryRecord
+
     @Modifying
-    @Query("update `seconds-contract`.sc_lottery_record l " +
-            "set l.status = '1',l.start_time = now() " +
-            "where l.status = '0' and TIMESTAMPDIFF(SECOND,create_time,NOW()) > 20"
+    @Query("select * FROM `seconds-contract`.sc_lottery_record l where l.status = '0' and TIMESTAMPDIFF(SECOND,create_time,NOW()) > 20"
         , nativeQuery = true)
-    fun lockUp(): Int
+    fun lockUp(): List<LotteryRecord>
+
+    fun findListByStatus(status: String): List<LotteryRecord>
+
 
     @Transactional
     @Modifying

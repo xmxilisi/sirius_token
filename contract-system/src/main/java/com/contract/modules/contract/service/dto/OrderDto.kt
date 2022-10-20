@@ -1,7 +1,9 @@
 package com.contract.modules.contract.service.dto
 
+import com.contract.modules.contract.domain.LotteryRecord
 import io.swagger.annotations.ApiModelProperty
 import java.math.BigDecimal
+import java.sql.Timestamp
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,23 +17,25 @@ class OrderDto {
     private val id: Long? = null
 
     @ApiModelProperty("下注金额")
-    private val betAmount: BigDecimal? = null
+    var betAmount: BigDecimal? = null
 
     @ApiModelProperty("建仓类型 0 -> 看跌 1 -> 看涨")
-    private val positionType: String? = null
+    var positionType: String? = null
 
     @ApiModelProperty("期号")
-    private val volume: String? = null
+    var volume: String? = null
 
     @ApiModelProperty("开仓时间")
-    private val openingTime: String? = null
+    var openingTime: Timestamp? = null
 
     @ApiModelProperty("用户id")
-    private val userId: Long? = null
+    var userId: Long? = null
 
     @ApiModelProperty("状态 0 -> 未开奖 1 -> 输 2 -> 赢")
-    private val status: String? = null
+    var status: String? = null
 
-    @ApiModelProperty("开奖记录id")
-    private val lotteryRecordId: Long? = null
+    var second:Long ? = 0
+
+    @ApiModelProperty("开奖记录")
+    var lotteryRecord: LotteryRecord?=null
 }

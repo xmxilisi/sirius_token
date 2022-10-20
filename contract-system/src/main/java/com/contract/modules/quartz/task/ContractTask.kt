@@ -29,12 +29,12 @@ class ContractTask {
         lotteryRecordService.deleteForNotUsed()
     }
     fun lotteryThirty(){
-        lotteryRecordService.lottery(list[0])
+        lotteryRecordService.lottery("30")
     }
     fun lotterySixty(){
-        lotteryRecordService.lottery(list[1])
+        lotteryRecordService.lottery("60")
     }
     fun lotteryOneHundredAndEighty(){
-        lotteryRecordService.lottery(list[2])
+        lotteryRecordService.lottery("180")
     }
 }

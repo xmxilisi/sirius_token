@@ -47,9 +47,10 @@ class Order : BaseEntity(), Serializable {
     @ApiModelProperty("状态 0 -> 未开奖 1 -> 输 2 -> 赢")
     var status: String? = null
 
-    @ApiModelProperty("开奖id")
-    var lotteryRecordId: Long? = null
-
     @ApiModelProperty("周期")
     var second: String? = null
+
+    @JoinColumn(name = "lottery_record_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    var lotteryRecord:LotteryRecord?=null
 }

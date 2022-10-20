@@ -4,6 +4,7 @@ import com.contract.modules.contract.service.LotteryRecordService
 import com.contract.modules.contract.service.dto.LotteryRecordDto
 import com.contract.utils.R
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiModelProperty
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,9 +26,10 @@ class LotteryRecordController {
     @Autowired
     private lateinit var lotteryRecordService: LotteryRecordService
 
+    @ApiModelProperty("获取最新期号")
     @GetMapping("/getNewVolume")
-    fun getNewVolume(symbol: String) : R<LotteryRecordDto?> {
-        return R.ok(lotteryRecordService.getNewVolume(symbol))
+    fun getNewVolume(symbol: String,second : String) : R<LotteryRecordDto?> {
+        return R.ok(lotteryRecordService.getNewVolume(symbol,second))
     }
 
 }
