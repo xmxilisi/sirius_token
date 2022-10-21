@@ -36,7 +36,7 @@ class OrderController {
     }
     @ApiOperation("获取订单详情")
     @GetMapping("/getOrderDetail")
-    fun getOrderDetail(volume : String): R<Map<String, Any>>{
-        return R.ok(orderService.getOrderDetail(volume));
+    fun getOrderDetail(): R<Map<String, Any>>{
+        return R.ok(orderService.getOrderDetail());
     }
 }

@@ -17,5 +17,5 @@ interface OrderService {
      */
     fun placeAnOrder(bo: OrderBo)
 
-    fun getOrderDetail(volume: String): Map<String,Any>
+    fun getOrderDetail(): Map<String,Any>
 }

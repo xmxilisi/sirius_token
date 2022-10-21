@@ -34,6 +34,9 @@ interface OrderRepository : JpaRepository<Order?, Long?>, JpaSpecificationExecut
 
     fun findListByUserIdAndSecond(userId: Long, second: String): List<Order>
 
+
+    fun findListByUserIdOrderByCreateTimeDesc(userId: Long): List<Order>
+
     fun findListByUserIdAndSecondOrderByCreateTimeDesc(userId: Long, second: String): List<Order>
 
 

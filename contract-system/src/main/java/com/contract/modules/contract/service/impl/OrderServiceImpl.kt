@@ -72,11 +72,12 @@ class OrderServiceImpl : OrderService {
         }
     }
 
-    override fun getOrderDetail(volume: String): Map<String, Any> {
+    override fun getOrderDetail(): Map<String, Any> {
         val map = mutableMapOf<String,Any>()
-        val order:List<Order> = orderRepository.findListByVolume(volume)
+        val userId: Long = SecurityUtils.getCurrentUserId()
+        val order:List<Order> = orderRepository.findListByUserIdOrderByCreateTimeDesc(userId)
         val orderDtoList = order.stream().map { orderMapper.toDto(it) }.toList()
-        map["second"] = redisTemplate.getExpire("contract-${volume}-countdown")
+        map["second"] = redisTemplate.getExpire("contract-${orderDtoList[0].volume}-countdown")
         map["type"] = orderDtoList[0].second.toString()
         map["order"] = orderDtoList
         return map;
