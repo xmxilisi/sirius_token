@@ -21,9 +21,9 @@ interface LotteryRecordRepository : JpaRepository<LotteryRecord, Long> {
 
     @Transactional
     @Modifying
-    @Query("update LotteryRecord l set l.drawDate = ?1, l.markPrice = ?2 , l.status = ?3 where l.id = ?4 and l.status = ?5 and l.type = ?6")
+    @Query("update LotteryRecord l set l.drawDate = ?1, l.strikePrice = ?2 , l.status = ?3 where l.id = ?4 and l.status = ?5 and l.type = ?6")
     fun lottery(
-        drawDate: Timestamp, markPrice: BigDecimal,
+        drawDate: Timestamp, strikePrice: BigDecimal,
         status: String, id: Long?, status1: String, type : String): Int
 
     fun findFirstBySymbolAndStatusAndType(symbol: String, status: String, type: String): LotteryRecord

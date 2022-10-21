@@ -24,5 +24,6 @@ interface LotteryRecordService {
     fun getNewVolume(symbol: String,second:String): LotteryRecordDto?
 
     fun getTheLotteryRecord(second: String, symbol: String): List<LotteryRecordVo>
+
     fun getBettingHistory(second: String): Any
 }

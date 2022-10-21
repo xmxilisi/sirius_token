@@ -87,13 +87,10 @@ class LotteryRecordServiceImpl : LotteryRecordService {
             } catch (e: Exception) {
                 getSymbolTickers(BTC_USDT)
             }
-            it.drawDate = Timestamp(Date().time)
-            it.markPrice = settlementPrice
-            it.status = "1"
-            lotteryRecordRepository.lottery(Timestamp.from(Date().toInstant()), settlementPrice, "2", it.id, "1",second)
+            lotteryRecordRepository.lottery(Timestamp(Date().time), settlementPrice, "2", it.id, "1",second)
             orderList.forEach { order ->
                 order.status = "1"
-                if (settlementPrice > (it?.markPrice ?: BigDecimal.ZERO) && order.positionType == "0") {
+                if ((settlementPrice > (it?.markPrice ?: BigDecimal.ZERO) && order.positionType == "1") || (settlementPrice < (it?.markPrice ?: BigDecimal.ZERO) && order.positionType == "0")) {
                     order.status = "2"
                     userAssetService.addBalance(order.userId, order.betAmount?.multiply(contractTypeEnum?.odds))
                 }
@@ -129,9 +126,9 @@ class LotteryRecordServiceImpl : LotteryRecordService {
 
     override fun getTheLotteryRecord(second: String, symbol: String): List<LotteryRecordVo> {
         val userId = SecurityUtils.getCurrentUserId()
-        var order: List<Order> = orderRepository.findListByUserIdAndSecond(userId,second);
+        var order: List<Order> = orderRepository.findListByUserIdAndSecondOrderByCreateTimeDesc(userId,second);
         val list = mutableListOf<LotteryRecordVo>()
-        order = order.filter { it.lotteryRecord?.symbol.equals(symbol) }
+        order = order.filter { it.lotteryRecord?.symbol.equals(symbol) && !it.status.equals("0")}
         order.forEach {
             val vo = LotteryRecordVo()
             vo.markPrice = it.lotteryRecord?.markPrice

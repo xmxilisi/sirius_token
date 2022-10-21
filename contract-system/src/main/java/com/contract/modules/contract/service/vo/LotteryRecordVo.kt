@@ -16,10 +16,10 @@ import java.sql.Timestamp
 class LotteryRecordVo {
     @ApiModelProperty("标记价格")
     var markPrice: BigDecimal? = null
-    @ApiModelProperty("期号")
-    var volume: String? = null
     @ApiModelProperty("行权价格")
     var strikePrice: BigDecimal? = null
+    @ApiModelProperty("期号")
+    var volume: String? = null
     @ApiModelProperty("建仓类型 0 -> 看跌 1 -> 看涨")
     var positionType: String? = null
     @ApiModelProperty("下注金额")

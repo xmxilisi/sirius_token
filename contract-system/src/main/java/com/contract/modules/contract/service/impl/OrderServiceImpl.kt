@@ -1,6 +1,7 @@
 package com.contract.modules.contract.service.impl
 
 import com.alibaba.fastjson.JSON
+import com.contract.exception.BusinessException
 import com.contract.modules.asset.service.UserAssetService
 import com.contract.modules.contract.domain.Order
 import com.contract.modules.contract.repository.LotteryRecordRepository
@@ -51,9 +52,13 @@ class OrderServiceImpl : OrderService {
      */
     override fun placeAnOrder(bo: OrderBo) {
         val userId: Long = SecurityUtils.getCurrentUserId()
+        val recordDto = bo.symbol?.let { lotteryRecordService.getNewVolume(it,bo.second.let { "30" }) }
+        val time = redisTemplate.getExpire("contract-${recordDto?.volume}")
+        if( time <= 5){
+            throw BusinessException("倒计时5秒不能下单！！！")
+        }
         val pay: Boolean = userAssetService.pay(userId, bo.betAmount)
         if (TRUE == pay) {
-            val recordDto = bo.symbol?.let { lotteryRecordService.getNewVolume(it,bo.second.let { "30" }) }
             val order = Order()
             order.second = bo.second
             order.positionType = bo.positionType
@@ -63,7 +68,7 @@ class OrderServiceImpl : OrderService {
             order.betAmount = bo.betAmount
             order.lotteryRecord = lotteryRecordMapper.toEntity(recordDto)
             orderRepository.save<Order>(order)
-            redisTemplate.opsForValue().set("contract-${order.volume}-countdown", JSON.toJSONString(order), (order.second?.toLong() ?: 0L) + redisTemplate.getExpire("contract-${order.volume}"), TimeUnit.SECONDS)
+            redisTemplate.opsForValue().set("contract-${order.volume}-countdown", JSON.toJSONString(order), (order.second?.toLong() ?: 0L) + time, TimeUnit.SECONDS)
         }
     }
 
