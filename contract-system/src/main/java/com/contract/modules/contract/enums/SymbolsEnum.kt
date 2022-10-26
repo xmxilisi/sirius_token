@@ -1,5 +1,8 @@
 package com.contract.modules.contract.enums
 
+import com.contract.modules.contract.utils.CryptoUtils.getSymbolTickers
+import java.math.BigDecimal
+
 /**
  * Created with IntelliJ IDEA.
  * @author: Ivan
@@ -8,5 +11,5 @@ package com.contract.modules.contract.enums
  * @Description:
  */
 enum class SymbolsEnum {
-    BTC,ETH,LUNA,BNB,XRP,ADA,SOL,DOGE,MATIC,DOT
+    BTC,ETH,LUNA,BNB,XRP,ADA,SOL,DOGE,MATIC,DOT;
 }

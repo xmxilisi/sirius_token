@@ -24,7 +24,7 @@ class ContractTask {
     private val list = listOf<String>("30","60","180")
 
     fun createContract() {
-        lotteryRecordService.createContract(CryptoUtils.getSymbolTickers(Constants.Cypto.BTC_USDT))
+        lotteryRecordService.createContract()
         lotteryRecordService.lockUp()
         lotteryRecordService.deleteForNotUsed()
     }

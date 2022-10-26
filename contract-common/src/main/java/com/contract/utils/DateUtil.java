@@ -28,6 +28,7 @@ import java.util.Date;
 public class DateUtil {
 
     public static final DateTimeFormatter DFY_MD_HMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter DFY_MD_HMS_SP = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public static final DateTimeFormatter DFY_MD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**

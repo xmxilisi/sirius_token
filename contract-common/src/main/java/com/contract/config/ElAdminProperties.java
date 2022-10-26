@@ -44,7 +44,7 @@ public class ElAdminProperties {
     public void init(){
         if (! Constants.System.PROD.equals(environment)) {
             System.out.println("开启本地代理......");
-            String proxyHost = "localhost";
+            String proxyHost = "192.168.1.18";
             String proxyPort = "7890";
             System.setProperty("http.proxyHost", proxyHost);
             System.setProperty("http.proxyPort", proxyPort);

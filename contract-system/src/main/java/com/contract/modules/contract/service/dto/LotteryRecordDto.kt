@@ -2,8 +2,13 @@ package com.contract.modules.contract.service.dto
 
 import com.contract.base.BaseDTO
 import io.swagger.annotations.ApiModelProperty
+import org.hibernate.annotations.CreationTimestamp
 import java.math.BigDecimal
 import java.sql.Timestamp
+import javax.persistence.Column
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,6 +37,10 @@ class LotteryRecordDto(): java.io.Serializable {
     var status: String? = null
 
     var type: String? = null
+
+    var startTime: Timestamp? = null
+
+    var endTime: Timestamp? = null
 
     var second: Long? = null
 }

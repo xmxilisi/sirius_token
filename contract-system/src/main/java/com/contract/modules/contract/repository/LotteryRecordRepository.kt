@@ -20,25 +20,21 @@ interface LotteryRecordRepository : JpaRepository<LotteryRecord, Long> {
 
 
     @Transactional
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("update LotteryRecord l set l.drawDate = ?1, l.strikePrice = ?2 , l.status = ?3 where l.id = ?4 and l.status = ?5 and l.type = ?6")
-    fun lottery(
-        drawDate: Timestamp, strikePrice: BigDecimal,
-        status: String, id: Long?, status1: String, type : String): Int
+    fun lottery(drawDate: Timestamp, strikePrice: BigDecimal, status: String, id: Long?, status1: String, type : String): Int
 
     fun findFirstBySymbolAndStatusAndType(symbol: String, status: String, type: String): LotteryRecord
 
-    @Modifying
-    @Query("select * FROM `seconds-contract`.sc_lottery_record l where l.status = '0' and TIMESTAMPDIFF(SECOND,create_time,NOW()) > 20"
+    @Query("select * FROM `seconds-contract`.sc_lottery_record l where l.status = '0' and TIMESTAMPDIFF(SECOND,create_time,now()) > 20"
         , nativeQuery = true)
     fun lockUp(): List<LotteryRecord>
 
     fun findListByStatus(status: String): List<LotteryRecord>
 
-
     @Transactional
-    @Modifying
-    @Query("delete from `seconds-contract`.sc_lottery_record  where (status = 1)  and " +
+    @Modifying()
+    @Query("delete from `seconds-contract`.sc_lottery_record  where (status = 1 or status = 2)  and " +
             "(select count(*) from `seconds-contract`.sc_order where `seconds-contract`.sc_order.lottery_record_id = `seconds-contract`.sc_lottery_record.lottery_record_id) = 0", nativeQuery = true)
     fun deleteForNotUsed(): Int
 
@@ -46,4 +42,10 @@ interface LotteryRecordRepository : JpaRepository<LotteryRecord, Long> {
     fun findLast(): LotteryRecord
 
     fun findFirstBySymbolAndStatus(symbol: String,status: String): LotteryRecord
+
+    fun findFirstBySymbolAndStatusAndTypeOrderByCreateTime(symbol: String, status: String, type: String): LotteryRecord
+
+    fun findLastBySymbolAndStatusAndType(symbol: String, status: String, type: String): LotteryRecord
+
+
 }

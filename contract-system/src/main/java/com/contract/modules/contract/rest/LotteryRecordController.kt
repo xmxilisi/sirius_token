@@ -1,5 +1,6 @@
 package com.contract.modules.contract.rest
 
+import com.contract.annotation.rest.AnonymousGetMapping
 import com.contract.modules.contract.service.LotteryRecordService
 import com.contract.modules.contract.service.dto.LotteryRecordDto
 import com.contract.utils.R
@@ -27,7 +28,7 @@ class LotteryRecordController {
     private lateinit var lotteryRecordService: LotteryRecordService
 
     @ApiModelProperty("获取最新期号")
-    @GetMapping("/getNewVolume")
+    @AnonymousGetMapping("/getNewVolume")
     fun getNewVolume(symbol: String,second : String) : R<LotteryRecordDto?> {
         return R.ok(lotteryRecordService.getNewVolume(symbol,second))
     }

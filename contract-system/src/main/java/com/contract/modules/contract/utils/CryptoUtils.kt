@@ -3,6 +3,7 @@ package com.contract.modules.contract.utils
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
 import com.contract.modules.contract.domain.KLineDataQueryParam
+import com.contract.modules.contract.enums.SymbolsEnum
 import com.contract.utils.StringUtils
 import com.sun.istack.NotNull
 import java.math.BigDecimal
@@ -37,6 +38,15 @@ object CryptoUtils {
     @JvmStatic
     fun getKLineData(query: KLineDataQueryParam): String{
         HttpClient["$BASE_URL/api/v3/klines", JSON.parseObject(JSON.toJSONString(query), mutableMapOf<String,Any>()::class.java)].apply { return this?.body().toString() }
+    }
+
+    @JvmStatic
+    fun getSymbolsPrice(): MutableMap<String,BigDecimal>  {
+        val map = mutableMapOf<String, BigDecimal>()
+        SymbolsEnum.values().forEach {
+            map[it.name] = getSymbolTickers(it.name + "USDT")
+        }
+        return map
     }
 
     /**

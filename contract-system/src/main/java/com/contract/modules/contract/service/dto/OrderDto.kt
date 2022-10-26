@@ -34,8 +34,11 @@ class OrderDto {
     @ApiModelProperty("状态 0 -> 未开奖 1 -> 输 2 -> 赢")
     var status: String? = null
 
-    var second:Long ? = 0
+    var second: String? = null
 
     @ApiModelProperty("开奖记录")
     var lotteryRecord: LotteryRecord?=null
+
+    @ApiModelProperty(value = "创建时间", hidden = true)
+    var createTime :Timestamp?=null
 }

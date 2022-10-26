@@ -1,6 +1,5 @@
 package com.contract.modules.contract.service.impl
 
-import cn.hutool.core.util.IdUtil
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSON.parseArray
 import com.contract.constants.Constants.Cypto.BTC_USDT
@@ -14,18 +13,24 @@ import com.contract.modules.contract.repository.LotteryRecordRepository
 import com.contract.modules.contract.repository.OrderRepository
 import com.contract.modules.contract.service.LotteryRecordService
 import com.contract.modules.contract.service.dto.LotteryRecordDto
+import com.contract.modules.contract.service.dto.OrderDto
 import com.contract.modules.contract.service.mapstruct.LotteryRecordMapper
+import com.contract.modules.contract.service.mapstruct.OrderMapper
 import com.contract.modules.contract.service.vo.LotteryRecordVo
 import com.contract.modules.contract.utils.CryptoUtils.getKLineData
 import com.contract.modules.contract.utils.CryptoUtils.getSymbolTickers
+import com.contract.modules.contract.utils.CryptoUtils.getSymbolsPrice
+import com.contract.utils.DateUtil
 import com.contract.utils.SecurityUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.sql.Timestamp
+import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,34 +57,45 @@ class LotteryRecordServiceImpl : LotteryRecordService {
     @Autowired
     private lateinit var userAssetService: UserAssetService
 
+    @Autowired
+    private lateinit var orderMapper: OrderMapper
+
     private val list = listOf("30", "60", "180")
 
-    override fun createContract(price: BigDecimal) {
+    override fun createContract() {
         val contractList = mutableListOf<LotteryRecord>()
+        val symbolsPrice = getSymbolsPrice()
         for (second in list) {
+            var i : Int = 0
+            val startTime:Timestamp = Timestamp.from(Date().toInstant().plusSeconds(30L))
+            val endTime = Timestamp(startTime.time + second.toLong() * 1000)
             SymbolsEnum.values().forEach {
-                val volume = IdUtil.getSnowflake().nextIdStr()
+                val volume = DateUtil.localDateTimeFormat(LocalDateTime.now(),DateUtil.DFY_MD_HMS_SP) + second + if (i < 10) "0$i" else i
                 val lotteryRecord = LotteryRecord()
-                lotteryRecord.markPrice = price
+                lotteryRecord.markPrice = symbolsPrice[it.name]
                 lotteryRecord.status = "0"
                 lotteryRecord.volume = volume
                 lotteryRecord.type = second
                 lotteryRecord.symbol = it.name
+                lotteryRecord.startTime = startTime
+                lotteryRecord.endTime = endTime
                 contractList.add(lotteryRecord)
-                redisTemplate.opsForValue()
-                    .set("contract-$volume", JSON.toJSONString(lotteryRecord), 30, TimeUnit.SECONDS)
+                redisTemplate.opsForValue().set("contract-$volume", JSON.toJSONString(lotteryRecord), 30, TimeUnit.SECONDS)
+                i++
             }
         }
         lotteryRecordRepository.saveAllAndFlush(contractList)
     }
 
     override fun lottery(second: String) {
-        var lotteryRecords = lotteryRecordRepository.findAll()
+        val lotteryRecords = lotteryRecordRepository.findAll()
+        var mutableList = lotteryRecordMapper.toDto(lotteryRecords)
         val contractTypeEnum = ContractTypeEnum.getBySecond(second)
-        lotteryRecords = lotteryRecords.filter { it.type.equals(second) && it.status.equals("1") && Date().time - (it.createTime?.time ?: Date().time) >= (second.toLong() * 1000L + redisTemplate.getExpire("contract-$it.volume")) }
-        lotteryRecords.forEach {
+        mutableList = mutableList.filter { it.type.equals(second) && it.status.equals("1") && Date().time - (it.createTime?.time ?: Date().time) >= (second.toLong() * 1000L + redisTemplate.getExpire("contract-$it.volume")) }
+        mutableList.forEach {
             val orderList = orderRepository.findListByVolume(it.volume)
-            val orderListByUpdate = mutableListOf<Order>()
+            val dtoMutableList = orderMapper.toDto(orderList)
+            val orderListByUpdate = mutableListOf<OrderDto>()
             val time =  it.startTime?.time?.plus((second.toLong()+redisTemplate.getExpire("contract-$it.volume"))*1000);
             val kLineData = getKLineData(KLineDataQueryParam(BTC_USDT, "1s", time, time, 30))
             val settlementPrice = try {
@@ -88,7 +104,7 @@ class LotteryRecordServiceImpl : LotteryRecordService {
                 getSymbolTickers(BTC_USDT)
             }
             lotteryRecordRepository.lottery(Timestamp(Date().time), settlementPrice, "2", it.id, "1",second)
-            orderList.forEach { order ->
+            dtoMutableList.forEach { order ->
                 order.status = "1"
                 if ((settlementPrice > (it?.markPrice ?: BigDecimal.ZERO) && order.positionType == "1") || (settlementPrice < (it?.markPrice ?: BigDecimal.ZERO) && order.positionType == "0")) {
                     order.status = "2"
@@ -96,19 +112,18 @@ class LotteryRecordServiceImpl : LotteryRecordService {
                 }
                 orderListByUpdate.add(order)
             }
-            orderRepository.saveAllAndFlush(orderListByUpdate)
-
+            orderRepository.saveAllAndFlush(orderMapper.toEntity(orderListByUpdate))
         }
-
     }
 
     override fun lockUp() {
         val recordList = lotteryRecordRepository.lockUp()
-        recordList.forEach {
+        val mutableList = lotteryRecordMapper.toDto(recordList)
+        val time = Timestamp(Date().time)
+        mutableList.forEach {
             it.status = "1"
-            it.startTime = Timestamp(Date().time)
         }
-        lotteryRecordRepository.saveAll(recordList)
+        lotteryRecordRepository.saveAllAndFlush(lotteryRecordMapper.toEntity(mutableList))
     }
 
     override fun deleteForNotUsed() {
@@ -119,17 +134,18 @@ class LotteryRecordServiceImpl : LotteryRecordService {
      * 获取指定交易对的期号和倒计时
      */
     override fun getNewVolume(symbol: String, second: String): LotteryRecordDto? {
-        val recordDto = lotteryRecordMapper.toDto(lotteryRecordRepository.findFirstBySymbolAndStatusAndType(symbol, "0",second))
+        val recordDto = lotteryRecordMapper.toDto(lotteryRecordRepository.findFirstBySymbolAndStatusAndTypeOrderByCreateTime(symbol, "0",second))
         recordDto.second = redisTemplate.getExpire("contract-${recordDto.volume}")
         return recordDto
     }
 
     override fun getTheLotteryRecord(second: String, symbol: String): List<LotteryRecordVo> {
         val userId = SecurityUtils.getCurrentUserId()
-        var order: List<Order> = orderRepository.findListByUserIdAndSecondOrderByCreateTimeDesc(userId,second);
+        val order: List<Order> = orderRepository.findListByUserIdAndSecondOrderByCreateTimeDesc(userId,second);
+        var mutableList = orderMapper.toDto(order)
         val list = mutableListOf<LotteryRecordVo>()
-        order = order.filter { it.lotteryRecord?.symbol.equals(symbol) && !it.status.equals("0")}
-        order.forEach {
+        mutableList = mutableList.filter { it.lotteryRecord?.symbol.equals(symbol) && !it.status.equals("0")}
+        mutableList.forEach {
             val vo = LotteryRecordVo()
             vo.markPrice = it.lotteryRecord?.markPrice
             vo.strikePrice = it.lotteryRecord?.strikePrice
@@ -147,8 +163,9 @@ class LotteryRecordServiceImpl : LotteryRecordService {
     override fun getBettingHistory(second: String): Any {
         val userId = SecurityUtils.getCurrentUserId()
         val order: List<Order> = orderRepository.findListByUserIdAndSecond(userId,second);
+        val mutableList = orderMapper.toDto(order)
         val list = mutableListOf<LotteryRecordVo>()
-        order.stream().map {
+        mutableList.stream().map {
             val vo = LotteryRecordVo()
             vo.markPrice = it.lotteryRecord?.markPrice
             vo.strikePrice = it.lotteryRecord?.strikePrice

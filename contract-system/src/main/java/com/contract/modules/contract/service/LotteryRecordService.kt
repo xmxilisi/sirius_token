@@ -13,7 +13,7 @@ import com.contract.modules.contract.service.vo.LotteryRecordVo
  * @Description:
  */
 interface LotteryRecordService {
-    fun createContract(price: BigDecimal)
+    fun createContract()
     fun lottery(second: String)
     fun lockUp()
     fun deleteForNotUsed()
